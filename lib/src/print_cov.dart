@@ -45,7 +45,7 @@ class FileEntity {
 /// Simple class to store the csv output to List
 /// and save it to csv file
 class OutputFile {
-  static File outputFile;
+  static late File outputFile;
   static List<String> tmpFile = [];
 
   static Future<void> saveFile() async {
@@ -101,14 +101,14 @@ void printCov(List<String> lines, List<FileEntity> files, String module,
   if (isSummary) {
     final mdl = module.isEmpty ? '' : '$module : ';
     if (min > 0) {
-      final cov = 100 * totalData.linesHit / totalData.linesFound;
+      final cov = 100 * totalData!.linesHit / totalData.linesFound;
       if (cov >= min) {
         print('${mdl}PASSED');
       } else {
         print('${mdl}FAILED');
       }
     } else {
-      final cov = _formatPercent(totalData.linesHit, totalData.linesFound);
+      final cov = _formatPercent(totalData!.linesHit, totalData.linesFound);
       print('$mdl$cov');
     }
     return;
@@ -121,7 +121,7 @@ void printCov(List<String> lines, List<FileEntity> files, String module,
   if (files.isEmpty) {
     for (final data in dataList.values) {
       if (data != totalData) {
-        lastDir = _printDir(data, data.file, lastDir, isCsv, isLineOnly);
+        lastDir = _printDir(data, data!.file, lastDir, isCsv, isLineOnly);
       }
     }
   } else {
@@ -131,7 +131,7 @@ void printCov(List<String> lines, List<FileEntity> files, String module,
     }
   }
 
-  _printTotal(isCsv, isLineOnly, totalData);
+  _printTotal(isCsv, isLineOnly, totalData!);
 }
 
 /// _printTotal
@@ -201,9 +201,9 @@ void _printHeader(bool isCsv, bool isLineOnly, String module) {
 /// _getCoverage
 ///
 /// Convert List of string [lines] in lcov format to list of [_Data]
-Map<String, _Data> _getCoverage(List<String> lines) {
-  Map<String, _Data> dataList = {};
-  _Data currentData;
+Map<String, _Data?> _getCoverage(List<String> lines) {
+  Map<String, _Data?> dataList = {};
+  _Data? currentData;
   _Data totalData = _Data(FileEntity(PrintCovConstants.allFiles));
   for (final line in lines) {
     final values = line.split(PrintCovConstants.colon);
@@ -214,7 +214,7 @@ Map<String, _Data> _getCoverage(List<String> lines) {
         break;
       case PrintCovConstants.DA:
         if (line.endsWith(PrintCovConstants.zero)) {
-          currentData.uncoveredLines =
+          currentData!.uncoveredLines =
               (currentData.uncoveredLines != PrintCovConstants.emptyString
                       ? '${currentData.uncoveredLines},'
                       : PrintCovConstants.emptyString) +
@@ -222,26 +222,26 @@ Map<String, _Data> _getCoverage(List<String> lines) {
         }
         break;
       case PrintCovConstants.LF:
-        currentData.linesFound = int.parse(values[1]);
+        currentData!.linesFound = int.parse(values[1]);
         break;
       case PrintCovConstants.LH:
-        currentData.linesHit = int.parse(values[1]);
+        currentData!.linesHit = int.parse(values[1]);
         break;
       case PrintCovConstants.FNF:
-        currentData.functionFound = int.parse(values[1]);
+        currentData!.functionFound = int.parse(values[1]);
         break;
       case PrintCovConstants.FNH:
-        currentData.functionHit = int.parse(values[1]);
+        currentData!.functionHit = int.parse(values[1]);
         break;
       case PrintCovConstants.BRF:
-        currentData.branchFound = int.parse(values[1]);
+        currentData!.branchFound = int.parse(values[1]);
         break;
       case PrintCovConstants.BRH:
-        currentData.branchHit = int.parse(values[1]);
+        currentData!.branchHit = int.parse(values[1]);
         break;
       case PrintCovConstants.BRDA:
         if (line.endsWith(PrintCovConstants.zero)) {
-          currentData.uncoveredBranch =
+          currentData!.uncoveredBranch =
               (currentData.uncoveredBranch != PrintCovConstants.emptyString
                       ? '${currentData.uncoveredBranch},'
                       : PrintCovConstants.emptyString) +
@@ -250,7 +250,7 @@ Map<String, _Data> _getCoverage(List<String> lines) {
         break;
       case PrintCovConstants.endOfRecord:
         {
-          dataList[currentData.file.toString()] = currentData;
+          dataList[currentData!.file.toString()] = currentData;
           totalData.total(currentData);
         }
         break;
@@ -263,7 +263,7 @@ Map<String, _Data> _getCoverage(List<String> lines) {
 /// _printDir.
 ///
 /// print directory [directory] & test coverage result [data]
-String _printDir(_Data data, FileEntity file, String directory, bool isCsv,
+String _printDir(_Data? data, FileEntity file, String directory, bool isCsv,
     bool isLineOnly) {
   String dir = directory;
   if (file.directory != dir) {
