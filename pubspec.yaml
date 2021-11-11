@@ -10,4 +10,4 @@ executables:
   test_cov_console:
 
 dev_dependencies:
-  test:
+  test: ^1.19.3
